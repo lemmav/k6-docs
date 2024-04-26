@@ -1,0 +1,54 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: init
+  labels:
+    app: init
+  namespace: {{ .Values.namespace }}
+  annotations:
+    "helm.sh/hook": pre-install,pre-upgrade
+    "helm.sh/hook-weight": "3"
+spec:
+  ttlSecondsAfterFinished: {{ .Values.initJob.ttlSecondsAfterFinished }}
+  template:
+    metadata:
+      name: init
+    spec:
+      restartPolicy: {{ .Values.initJob.restartPolicy }}
+      containers:
+      - name: ubuntu-container
+        image: ubuntu:latest
+        command: ["/bin/bash", "-c"]
+        args: ["/scripts/script.sh"]
+        volumeMounts:
+        - name: test-volume
+          mountPath: /pvc
+        - name: test-volume-cc
+          mountPath: /pvc-cc
+        - name: script
+          mountPath: "/scripts/script.sh"
+          subPath: script.sh
+        - name: json-config
+          mountPath: /cm-test/save-changes-document-random-close.json
+          subPath: save-changes-document-random-close.json
+        - name: json-config-cc
+          mountPath: /cm-test/save-changes-document-random-close-cc.json
+          subPath: save-changes-document-random-close-cc.json
+      volumes:
+        - name: script
+          configMap:
+            name: script
+            defaultMode: 0755
+        - name: json-config
+          configMap:
+            name: save-changes-document-random-close.json
+        - name: json-config-cc
+          configMap:
+            name: save-changes-document-random-close-cc.json
+        - name: test-volume
+          persistentVolumeClaim:
+            claimName: stress-test-volumeclaim
+        - name: test-volume-cc
+          persistentVolumeClaim:
+            claimName: stress-test-volumeclaim-cc
+

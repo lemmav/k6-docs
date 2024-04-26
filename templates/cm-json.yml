@@ -1,0 +1,37 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: save-changes-document-random-close.json
+  namespace: {{ .Values.namespace }}
+  annotations:
+    "helm.sh/hook": pre-install,pre-upgrade
+    "helm.sh/hook-weight": "1"
+data:
+  save-changes-document-random-close.json: |
+    {
+      "serverProtoSuffix": "",
+      "serverNameOrIp": "{{ .Values.json.serverNameOrIp }}.default.svc.cluster.local",
+      "serverPort": {{ .Values.json.serverPort }},
+      "coeditorsCount": {{ .Values.json.coeditorsCount }},
+      "saveChangesThroughputPerMinute": 10,
+      "closeSessionPercentPerMinute": 20,
+      "docsApi" : {
+        "enable": true,
+        "documentUrl": "http://{{ .Values.json.nginxSerivceName }}.{{ .Values.namespace }}.svc.cluster.local:80/docs/jmeter-test.docx",
+        "callbackUrl": "http://{{ .Values.json.nginxSerivceName }}.{{ .Values.namespace }}.svc.cluster.local:80/dummyCallback",
+        "jwtSecret": ""
+      },
+      "wopi": {
+        "enable": false,
+        "wopiHost": "http://exmaple.com"
+      },
+      "changesPath": "dataset/7.5/changes.csv",
+      "timeoutConnection": 20000,
+      "timeoutAuth": 60000,
+      "timeoutDownload": 10000,
+      "timeoutConvertion": 600000,
+      "timeoutReadTimeout": 10000,
+      "timeoutSaveLock": 500,
+      "timeoutSaveLockRandom": 100
+    }
+

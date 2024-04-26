@@ -1,0 +1,43 @@
+---
+apiVersion: k6.io/v1alpha1
+kind: TestRun
+metadata:
+  name: coeditorscount-k6-sample-k6-operator-system
+  namespace: {{ .Values.namespace }}
+spec:
+  parallelism: 4
+  script:
+    volumeClaim:
+      name: stress-test-volumeclaim-cc
+      # test.js should exist inside /test/ folder.
+      # And, All the js files and directories test.js
+      # is importing from should be inside the same directory as well.
+      file: save-changes-document-random-close.js
+  arguments: --out influxdb=http://influxdb.default.svc.cluster.local:8086/k6 --vus 5 --duration 5m
+  # initializer:
+  #   tolerations:
+  #   - key: "test"
+  #     operator: "Equal"
+  #     value: "k6"
+  #     effect: "NoSchedule"
+  #   nodeSelector:
+  #     test: k6
+  runner:
+    # tolerations:
+    # - key: "test"
+    #   operator: "Equal"
+    #   value: "k6"
+    #   effect: "NoSchedule"
+    # nodeSelector:
+    #   test: k6
+    env:
+      - name: K6_INFLUXDB_PUSH_INTERVAL
+        value: 1m
+  # starter:
+  #   tolerations:
+  #   - key: "test"
+  #     operator: "Equal"
+  #     value: "k6"
+  #     effect: "NoSchedule"
+  #   nodeSelector:
+  #     test: k6

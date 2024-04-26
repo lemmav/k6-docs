@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-config
+  namespace: {{ .Values.namespace }}
+  annotations:
+    "helm.sh/hook": pre-install,pre-upgrade
+    "helm.sh/hook-weight": "1"
+data:
+  nginx.conf: |
+    server {
+      listen 80;
+      server_name localhost;
+
+      location /dummyCallback {
+        return 200 '{"error":0}';
+      }
+
+      location /docs/ {
+        alias /test/;
+      }
+    }
+

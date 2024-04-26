@@ -1,0 +1,20 @@
+# cm-init-script: 
+namespace: "k6-operator-system"
+script:
+  branch: "develop"
+  commit: "9a43eceacd8807d1061c83a3d0f8f7c5d81faaf3"
+  gitRepo: "https://github.com/ONLYOFFICE/document-server-stress-testing.git"
+json:
+  serverNameOrIp: "docs"
+  serverPort: "80"
+  coeditorsCount: "1"
+  coeditorsCountCC: "5"
+  nginxSerivceName: "nginx-service"
+nginx:
+  replicas: "2"
+initJob:
+  ttlSecondsAfterFinished: "60"
+  restartPolicy: "Never"
+stressTestVolumeclaim:
+  storageSize: "1Gi"
+  storageClassName: "nfs"

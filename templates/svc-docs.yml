@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: docs
+  annotations:
+    "helm.sh/hook": pre-install,pre-upgrade
+    "helm.sh/hook-weight": "1"
+spec:
+  ports:
+  - port: 80 
+    targetPort: 8888
+    protocol: TCP
+  selector:
+    app: docservice
+

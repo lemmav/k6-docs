@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: script
+  namespace: {{ .Values.namespace }}
+  annotations:
+    "helm.sh/hook": pre-install,pre-upgrade
+    "helm.sh/hook-weight": "1"
+data:
+  script.sh: |
+    #!/bin/bash
+    apt-get update && apt-get install -y git
+
+    git clone --branch {{ .Values.script.branch }} {{ .Values.script.gitRepo }}
+    cd document-server-stress-testing
+    git checkout {{ .Values.script.commit }}
+
+    cp -R /document-server-stress-testing/K6/7.3-and-later/. /pvc
+    cp /cm-test/save-changes-document-random-close.json /pvc
+    mv /pvc/dataset/sample.docx /pvc/jmeter-test.docx
+
+    cp -R /document-server-stress-testing/K6/7.3-and-later/. /pvc-cc
+    cp /cm-test/save-changes-document-random-close-cc.json /pvc-cc/save-changes-document-random-close.json
+    mv /pvc-cc/dataset/sample.docx /pvc-cc/jmeter-test.docx
+
