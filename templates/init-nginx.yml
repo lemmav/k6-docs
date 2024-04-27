@@ -1,0 +1,67 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: nginx
+spec:
+  replicas: {{ .Values.nginx.replicas }}
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      initContainers:
+        - name: init-container
+          image: ubuntu:latest
+          command: ["/bin/bash", "-c"]
+          args: ["/scripts/script.sh"]
+          volumeMounts:
+            - name: test-volume
+              mountPath: /pvc
+            - name: test-volume-cc
+              mountPath: /pvc-cc
+            - name: script
+              mountPath: "/scripts/script.sh"
+              subPath: script.sh
+            - name: json-config
+              mountPath: /cm-test/save-changes-document-random-close.json
+              subPath: save-changes-document-random-close.json
+            - name: json-config-cc
+              mountPath: /cm-test/save-changes-document-random-close-cc.json
+              subPath: save-changes-document-random-close-cc.json
+      containers:
+        - name: nginx
+          image: nginx:latest
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - name: nginx-config
+              mountPath: /etc/nginx/conf.d/default.conf
+              subPath: nginx.conf
+            - name: test-volume
+              mountPath: /test
+      volumes:
+        - name: nginx-config
+          configMap:
+            name: nginx-config
+        - name: script
+          configMap:
+            name: script
+            defaultMode: 0755
+        - name: json-config
+          configMap:
+            name: save-changes-document-random-close.json
+        - name: json-config-cc
+          configMap:
+            name: save-changes-document-random-close-cc.json
+        - name: test-volume
+          persistentVolumeClaim:
+            claimName: stress-test-volumeclaim
+        - name: test-volume-cc
+          persistentVolumeClaim:
+            claimName: stress-test-volumeclaim-cc

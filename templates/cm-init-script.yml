@@ -15,11 +15,17 @@ data:
     cd document-server-stress-testing
     git checkout {{ .Values.script.commit }}
 
+    echo "!!! I've made a checkout of the document-server-stress-testing repo"
+
     cp -R /document-server-stress-testing/K6/7.3-and-later/. /pvc
     cp /cm-test/save-changes-document-random-close.json /pvc
     mv /pvc/dataset/sample.docx /pvc/jmeter-test.docx
 
+    echo "!!! I've made a copy of the document-server-stress-testing repo"
+
     cp -R /document-server-stress-testing/K6/7.3-and-later/. /pvc-cc
     cp /cm-test/save-changes-document-random-close-cc.json /pvc-cc/save-changes-document-random-close.json
     mv /pvc-cc/dataset/sample.docx /pvc-cc/jmeter-test.docx
+
+    echo "!!! I've made a copy of the document-server-stress-testing repo in the second PVC"
 
