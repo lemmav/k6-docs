@@ -14,14 +14,50 @@ spec:
       # is importing from should be inside the same directory as well.
       file: save-changes-document-random-close.js
   arguments: --out influxdb=http://influxdb.default.svc.cluster.local:8086/k6 --vus 5 --duration 5m
-  # initializer:
-  #   tolerations:
-  #   - key: "test"
-  #     operator: "Equal"
-  #     value: "k6"
-  #     effect: "NoSchedule"
-  #   nodeSelector:
-  #     test: k6
+  initializer:
+    initContainers:
+    - name: init
+      image: ubuntu:latest
+      command: ["/bin/bash", "-c"]
+      args: ["/scripts/script.sh"]
+      volumeMounts:
+        - name: test-volume
+          mountPath: /pvc
+        - name: test-volume-cc
+          mountPath: /pvc-cc
+        - name: script
+          mountPath: "/scripts/script.sh"
+          subPath: script.sh
+        - name: json-config
+          mountPath: /cm-test/save-changes-document-random-close.json
+          subPath: save-changes-document-random-close.json
+        - name: json-config-cc
+          mountPath: /cm-test/save-changes-document-random-close-cc.json
+          subPath: save-changes-document-random-close-cc.json
+  volumes:
+    - name: script
+      configMap:
+        name: script
+        defaultMode: 0755
+    - name: json-config
+      configMap:
+        name: save-changes-document-random-close.json
+    - name: json-config-cc
+      configMap:
+        name: save-changes-document-random-close-cc.json
+    - name: test-volume
+      persistentVolumeClaim:
+        claimName: stress-test-volumeclaim
+    - name: test-volume-cc
+      persistentVolumeClaim:
+        claimName: stress-test-volumeclaim-cc
+    # tolerations:
+    # - key: "test"
+    #   operator: "Equal"
+    #   value: "k6"
+    #   effect: "NoSchedule"
+    # nodeSelector:
+    #   test: k6
   runner:
     # tolerations:
     # - key: "test"
