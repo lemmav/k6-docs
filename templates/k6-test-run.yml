@@ -34,23 +34,23 @@ spec:
         - name: json-config-cc
           mountPath: /cm-test/save-changes-document-random-close-cc.json
           subPath: save-changes-document-random-close-cc.json
-  volumes:
-    - name: script
-      configMap:
-        name: script
-        defaultMode: 0755
-    - name: json-config
-      configMap:
-        name: save-changes-document-random-close.json
-    - name: json-config-cc
-      configMap:
-        name: save-changes-document-random-close-cc.json
-    - name: test-volume
-      persistentVolumeClaim:
-        claimName: stress-test-volumeclaim
-    - name: test-volume-cc
-      persistentVolumeClaim:
-        claimName: stress-test-volumeclaim-cc
+    volumes:
+      - name: script
+        configMap:
+          name: script
+          defaultMode: 0755
+      - name: json-config
+        configMap:
+          name: save-changes-document-random-close.json
+      - name: json-config-cc
+        configMap:
+          name: save-changes-document-random-close-cc.json
+      - name: test-volume
+        persistentVolumeClaim:
+          claimName: stress-test-volumeclaim
+      - name: test-volume-cc
+        persistentVolumeClaim:
+          claimName: stress-test-volumeclaim-cc
     # tolerations:
     # - key: "test"
     #   operator: "Equal"
